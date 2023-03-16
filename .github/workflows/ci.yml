@@ -1,0 +1,21 @@
+name: 'Unit Tests'
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  continuous-integration:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Composer
+        uses: php-actions/composer@v6
+      - name: Tests
+        uses: php-actions/phpunit@v3
+        with:
+          version: 10.0
