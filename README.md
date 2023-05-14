@@ -19,7 +19,8 @@ Let's take a look at a quick code example.
 
 namespace Cspray\StreamBufferDemo;
 
-use Cspray\StreamBufferIntercept\BufferIdentifier;use Cspray\StreamBufferIntercept\StreamBuffer;
+use Cspray\StreamBufferIntercept\Buffer;
+use Cspray\StreamBufferIntercept\StreamFilter;
 use PHPUnit\Framework\TestCase;
 
 class MyLogger {
@@ -44,36 +45,36 @@ class MyLogger {
 
 class MyLoggerTest extends TestCase {
 
-    private BufferIdentifier $stdout;
+    private Buffer $stdout;
     
-    private BufferIdentifier $stderr;
+    private Buffer $stderr;
     
     private MyLogger $subject;
 
     protected function setUp() : void{
-        StreamBuffer::register();
-        $this->stdout = StreamBuffer::intercept(STDOUT);
-        $this->stderr = StreamBuffer::intercept(STDERR);
+        StreamFilter::register();
+        $this->stdout = StreamFilter::intercept(STDOUT);
+        $this->stderr = StreamFilter::intercept(STDERR);
         $this->subject = new MyLogger(STDOUT, STDERR);
     }
     
     protected function tearDown() : void{
-        StreamBuffer::stopIntercepting($this->stdout);
-        StreamBuffer::stopIntercepting($this->stderr);
+        StreamFilter::stopIntercepting($this->stdout);
+        StreamFilter::stopIntercepting($this->stderr);
     }
     
     public function testLogMessageSentToStdOutAndNotStdErr() : void {
         $this->subject->log('My stdout output'); 
         
-        self::assertSame('My stdout output', StreamBuffer::output($this->stdout));
-        self::assertSame('', StreamBuffer::output($this->stderr));
+        self::assertSame('My stdout output', $this->stdout->output());
+        self::assertSame('', $this->stderr->output());
     }
 
     public function testLogErrorMessageSentToStdErrAndNotStdOut() : void {
         $this->subject->logError('My stderr output'); 
         
-        self::assertSame('My stderr output', StreamBuffer::output($this->stderr));
-        self::assertSame('', StreamBuffer::output($this->stdout));
+        self::assertSame('My stderr output', $this->stderr->output());
+        self::assertSame('', $this->stdout->output());
     }
 }
 ```
