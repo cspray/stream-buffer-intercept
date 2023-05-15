@@ -50,7 +50,7 @@ class MyLoggerTest extends TestCase {
     private Buffer $stderr;
     
     private MyLogger $subject;
-
+    
     protected function setUp() : void{
         StreamFilter::register();
         $this->stdout = StreamFilter::intercept(STDOUT);
@@ -59,8 +59,8 @@ class MyLoggerTest extends TestCase {
     }
     
     protected function tearDown() : void{
-        StreamFilter::stopIntercepting($this->stdout);
-        StreamFilter::stopIntercepting($this->stderr);
+        $this->stdout->stopIntercepting();
+        $this->stderr->stopIntercepting();
     }
     
     public function testLogMessageSentToStdOutAndNotStdErr() : void {
