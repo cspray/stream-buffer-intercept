@@ -58,7 +58,6 @@ final class StreamFilterTest extends TestCase {
         );
     }
 
-    #[RunInSeparateProcess]
     public function testInterceptAddsBuffers() : void {
         StreamFilter::register();
 
@@ -71,7 +70,6 @@ final class StreamFilterTest extends TestCase {
         self::assertContainsEquals($buffer, $buffers);
     }
 
-    #[RunInSeparateProcess]
     public function testResetAllResetsBuffersToEmptyCollection() : void {
         StreamFilter::register();
 
@@ -87,7 +85,6 @@ final class StreamFilterTest extends TestCase {
 
     }
 
-    #[RunInSeparateProcess]
     public function testWritingToInterceptedStreamAddedToCorrectOutput() : void {
         StreamFilter::register();
 
@@ -101,7 +98,6 @@ final class StreamFilterTest extends TestCase {
         );
     }
 
-    #[RunInSeparateProcess]
     public function testResetIndividualBufferClearsToEmptyString() : void {
         StreamFilter::register();
 
@@ -116,7 +112,6 @@ final class StreamFilterTest extends TestCase {
         self::assertSame('', $buffer->output());
     }
 
-    #[RunInSeparateProcess]
     public function testStopInterceptingRemovesBufferedResourceFromCache() : void {
         StreamFilter::register();
 
@@ -129,7 +124,6 @@ final class StreamFilterTest extends TestCase {
         self::assertSame([], StreamFilter::buffers());
     }
 
-    #[RunInSeparateProcess]
     public function testStopInterceptingBufferIdentifierNotFoundThrowsException() : void {
         StreamFilter::register();
 
@@ -142,7 +136,6 @@ final class StreamFilterTest extends TestCase {
         $buffer->stopIntercepting();
     }
 
-    #[RunInSeparateProcess]
     public function testOutputForBufferStoppedInterceptingThrowsException() : void {
         StreamFilter::register();
 
@@ -156,7 +149,6 @@ final class StreamFilterTest extends TestCase {
         $buffer->output();
     }
 
-    #[RunInSeparateProcess]
     public function testResetForBufferNotFoundThrowsException() : void {
         StreamFilter::register();
 
@@ -170,7 +162,6 @@ final class StreamFilterTest extends TestCase {
         $buffer->reset();
     }
 
-    #[RunInSeparateProcess]
     public function testInterceptOptionsDefaultDoesNotHaveContentsInResource() : void {
         StreamFilter::register();
 
@@ -184,7 +175,6 @@ final class StreamFilterTest extends TestCase {
         self::assertSame('', stream_get_contents($this->resource));
     }
 
-    #[RunInSeparateProcess]
     public function testInterceptOptionsTrapDoesNotHaveContentsInResource() : void {
         StreamFilter::register();
 
@@ -198,7 +188,6 @@ final class StreamFilterTest extends TestCase {
         self::assertSame('', stream_get_contents($this->resource));
     }
 
-    #[RunInSeparateProcess]
     public function testInterceptOptionsPassThruDoesHaveContentsInResource() : void {
         StreamFilter::register();
 
@@ -212,7 +201,6 @@ final class StreamFilterTest extends TestCase {
         self::assertSame('Content written to stream', stream_get_contents($this->resource));
     }
 
-    #[RunInSeparateProcess]
     public function testInterceptOptionsFatalErrorThrowsError() : void {
         StreamFilter::register();
 
@@ -226,7 +214,6 @@ final class StreamFilterTest extends TestCase {
         self::assertSame('', stream_get_contents($this->resource));
     }
 
-    #[RunInSeparateProcess]
     public function testWritingToSeparateStreams() : void {
         StreamFilter::register();
 
@@ -238,6 +225,20 @@ final class StreamFilterTest extends TestCase {
 
         self::assertSame('Memory output', $memory->output());
         self::assertSame('stdout output', $stdout->output());
+    }
+
+    public function testInterceptingStoppingAndStartingAgainDoesNotResultInNullPointer() : void {
+        StreamFilter::register();
+
+        $buffer = StreamFilter::intercept($this->resource);
+        $buffer->stopIntercepting();
+
+        $buffer = StreamFilter::intercept($this->resource);
+        fwrite($this->resource, 'Some content');
+
+        self::assertSame('Some content', $buffer->output());
+
+        $buffer->stopIntercepting();
     }
 
 }
