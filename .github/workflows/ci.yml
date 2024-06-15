@@ -22,10 +22,8 @@ jobs:
         run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
       - name: Setup problem matchers for PHPUnit
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-      - name: Composer (Annotated Container)
+      - name: Composer
         run: composer install
-      - name: Composer (Testing Tools)
-        run: cd tools/phpunit && composer install
       - name: Unit Testing
         env:
           XDEBUG_MODE: coverage
