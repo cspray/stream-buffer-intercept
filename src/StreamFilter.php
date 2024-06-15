@@ -61,6 +61,7 @@ final class StreamFilter extends php_user_filter {
                 if (!isset(self::$cache[$bufferId])) {
                     throw BufferNotFound::fromStopInterceptingMissingBuffer();
                 }
+                stream_filter_remove(self::$cache[$bufferId]['filter']);
                 unset(self::$cache[$bufferId]);
             }
         ) implements Buffer {
